@@ -19,6 +19,9 @@ public class PostController {
     private PostRepository postRepository;
 
     @Autowired
+    private PostCacheService postCacheService;
+
+    @Autowired
     ObjectMapper objectMapper;
 
     @Autowired
@@ -35,6 +38,9 @@ public class PostController {
     // 2. 페이징 목록
     @GetMapping("/posts")
     public Page<Post> getPostList(@RequestParam(defaultValue = "1") Integer page) {
+        if (isFirstPage(page)) {
+            return postCacheService.getFirstPage();
+        }
         return postRepository.findAll(
             PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").descending())
         );
@@ -52,5 +58,8 @@ public class PostController {
         return postRepository.findByContentContains(content);
     }
 
+    private boolean isFirstPage(Integer page) {
+        return page.equals(1);
+    }
 
 }
