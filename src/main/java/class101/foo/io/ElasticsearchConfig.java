@@ -12,9 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-public class ElasticSearchConfig {
-
-    @Value("#['${spring.data.elasticsearch.hosts}'.split(',')]")
+public class ElasticsearchConfig {
+    @Value("#{'${spring.data.elasticsearch.hosts}'.split(',')}")
     private List<String> hosts;
 
     @Value("${spring.data.elasticsearch.port}")
@@ -22,13 +21,13 @@ public class ElasticSearchConfig {
 
     @Bean
     public RestHighLevelClient getRestClient() {
+
         List<HttpHost> hostList = new ArrayList<>();
-        for (String host: hosts) {
+        for (String host : hosts) {
             hostList.add(new HttpHost(host, port, "http"));
         }
 
-        RestClientBuilder builder = RestClient.builder(hosts.toArray(new HttpHost[hostList.size()]));
+        RestClientBuilder builder = RestClient.builder(hostList.toArray(new HttpHost[hostList.size()]));
         return new RestHighLevelClient(builder);
     }
-
 }
